@@ -1,15 +1,18 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('layouts.master')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <x-welcome />
-            </div>
-        </div>
-    </div>
-</x-app-layout>
+<center><h1>Bienvenido Rol Administrador</h1></center>
+
+@section('content')
+<div class="card-body">
+    @if(session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Acceso Denegado',
+            text: "{{ session('error') }}",
+            confirmButtonText: 'Entendido'
+        });
+    </script>
+    @endif
+</div>
+@endsection
