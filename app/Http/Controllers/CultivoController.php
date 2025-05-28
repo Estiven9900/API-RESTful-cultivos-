@@ -21,19 +21,41 @@ class CultivoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-
             'nombre' => 'required|string|max:255',
             'tipo' => 'nullable|string|max:500',
             'fecha' => 'required|date',
         ]);
 
-        $cultivo = new Cultivo();
-      
-        $cultivo->nombre = $request->input('nombre');
-        $cultivo->tipo = $request->input('tipo');
-        $cultivo->fecha = $request->input('fecha');
-        $cultivo->save();
+        Cultivo::create($request->all());
 
         return redirect()->route('cultivos.index')->with('success', 'Cultivo agregado correctamente');
+    }
+
+    public function edit($id)
+    {
+        $cultivo = Cultivo::findOrFail($id);
+        return response()->json($cultivo);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'tipo' => 'nullable|string|max:500',
+            'fecha' => 'required|date',
+        ]);
+
+        $cultivo = Cultivo::findOrFail($id);
+        $cultivo->update($request->all());
+
+        return response()->json(['success' => 'Cultivo actualizado correctamente']);
+    }
+
+    public function destroy($id)
+    {
+        $cultivo = Cultivo::findOrFail($id);
+        $cultivo->delete();
+
+        return response()->json(['success' => 'Cultivo eliminado correctamente']);
     }
 }
