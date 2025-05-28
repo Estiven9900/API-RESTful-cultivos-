@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=}, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Listado de cultivos</title>
 </head>
 <body>
     <center><h1>Listado de Cultivos </h1>
@@ -25,10 +25,6 @@
             <table class="table table-sm table-bordered">
                 <thead>
                     <th>
-                        <center>Id</center>
-                    </th>
-                 
-                    <th>
                         <center>Nombre Cultivo</center>
                     </th>
                   
@@ -44,9 +40,6 @@
                 <tbody>
                     @foreach ($cultivos as $item)
                     <tr>
-                        <td>
-                            <center>{{ $item->id }}</center>
-                        </td> 
                          <td>
                             <center>{{ $item->nombre }}</center>
                         </td>
@@ -166,6 +159,61 @@
                 });
             });
         </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Editar cultivo
+    document.getElementById('formEditar').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const form = this;
+        const url = form.action;
+        const formData = new FormData(form);
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': form.querySelector('[name="_token"]').value,
+                'Accept': 'application/json'
+            },
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = "{{ route('cultivos.index') }}";
+            } else {
+                return response.json().then(data => {
+                    alert('Error al editar el cultivo');
+                });
+            }
+        });
+    });
+
+    // Eliminar cultivo
+    document.getElementById('formEliminar').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const form = this;
+        const url = form.action;
+        const formData = new FormData(form);
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': form.querySelector('[name="_token"]').value,
+                'Accept': 'application/json'
+            },
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = "{{ route('cultivos.index') }}";
+            } else {
+                return response.json().then(data => {
+                    alert('Error al eliminar el cultivo');
+                });
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>
 
