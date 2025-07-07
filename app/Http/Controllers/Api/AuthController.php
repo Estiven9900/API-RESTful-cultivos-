@@ -18,13 +18,30 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if ($user && Hash::check($request->password, $user->password)) {
-            // Aquí puedes generar un token si usas Sanctum o JWT
-            // Ejemplo con Sanctum:
-            // $token = $user->createToken('auth_token')->plainTextToken;
-            return response()->json(['success' => true], 200);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Usuario no encontrado'], 401);
         }
 
-        return response()->json(['success' => false, 'message' => 'Credenciales incorrectas'], 401);
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json(['success' => false, 'message' => 'Contraseña incorrecta'], 401);
+        }
+
+        return response()->json(['success' => true], 200);
+    }
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6',
+        ]);
+
+        $user = User::create([
+            'name' => 'Nuevo Usuario',
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json(['success' => true], 201);
     }
 }
