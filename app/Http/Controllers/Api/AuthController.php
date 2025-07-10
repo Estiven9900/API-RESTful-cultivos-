@@ -9,39 +9,58 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
+    // Registro de usuario
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+        ]);
+
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        $token = $user->createToken('flutter-token')->plainTextToken;
+
+        return response()->json([
+            'user'  => [
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'email' => $user->email,
+                'profile_photo_url' => $user->profile_photo_url,
+            ],
+            'token' => $token
+        ], 201);
+    }
+
+    // Login de usuario
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required|string',
         ]);
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
-            return response()->json(['success' => false, 'message' => 'Usuario no encontrado'], 401);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Credenciales incorrectas'], 401);
         }
 
-        if (!Hash::check($request->password, $user->password)) {
-            return response()->json(['success' => false, 'message' => 'Contraseña incorrecta'], 401);
-        }
+        $token = $user->createToken('flutter-token')->plainTextToken;
 
-        return response()->json(['success' => true], 200);
-    }
-
-    public function register(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6',
+        return response()->json([
+            'user'  => [
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'email' => $user->email,
+                'profile_photo_url' => $user->profile_photo_url,
+            ],
+            'token' => $token
         ]);
-
-        $user = User::create([
-            'name' => 'Nuevo Usuario',
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        return response()->json(['success' => true], 201);
     }
 }
