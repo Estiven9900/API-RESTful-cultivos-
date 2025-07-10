@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CultivoController;
+use App\Http\Controllers\Api\AuthController;
 
 // Página de bienvenida
 Route::get('/', function () {
@@ -27,3 +28,4 @@ Route::middleware([
     Route::put('/cultivos/{id}', [CultivoController::class, 'update'])->name('cultivos.update');
     Route::delete('/cultivos/{id}', [CultivoController::class, 'destroy'])->name('cultivos.destroy');
 });
+
